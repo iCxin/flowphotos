@@ -7,6 +7,8 @@ export function SkeletonGrid() {
 
   useEffect(() => {
     const updateColumns = () => {
+      if (typeof window === 'undefined') return
+      
       const width = window.innerWidth
       if (width < 480) {
         setColumns(1)
@@ -39,7 +41,7 @@ export function SkeletonGrid() {
               key={itemIndex}
               className="rounded-md sm:rounded-lg bg-muted animate-pulse"
               style={{
-                aspectRatio: `${Math.random() > 0.5 ? "3/4" : "4/3"}`,
+                aspectRatio: "4/3",
               }}
             />
           ))}

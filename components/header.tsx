@@ -1,12 +1,12 @@
 "use client"
 
-import { Camera, Grid3x3, Clock, SlidersHorizontal, Layers, Info } from "lucide-react"
+import { Camera, Grid3x3, Clock, SlidersHorizontal, Info } from "lucide-react"
 import Link from "next/link"
 import { SettingsPanel } from "./settings-panel"
 
 interface HeaderProps {
-  viewMode: "grid" | "timeline" | "albums"
-  onViewModeChange: (mode: "grid" | "timeline" | "albums") => void
+  viewMode: "grid" | "timeline"
+  onViewModeChange: (mode: "grid" | "timeline") => void
   onToggleFilters: () => void
   showFilters: boolean
 }
@@ -50,17 +50,6 @@ export function Header({ viewMode, onViewModeChange, onToggleFilters, showFilter
             >
               <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
               <span className="hidden xs:inline">时间轴</span>
-            </button>
-            <button
-              onClick={() => onViewModeChange("albums")}
-              className={`flex items-center justify-center gap-1 px-1.5 sm:px-2 md:px-3 py-1 sm:py-1.5 md:py-2 rounded-md sm:rounded-lg text-[10px] sm:text-xs md:text-sm font-medium transition-all hover:scale-105 active:scale-95 ${
-                viewMode === "albums"
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent"
-              }`}
-            >
-              <Layers className="h-3 w-3 sm:h-3.5 sm:w-3.5 md:h-4 md:w-4" />
-              <span className="hidden xs:inline">相册</span>
             </button>
             <Link
               href="/exif-reader"

@@ -45,6 +45,8 @@ export function PhotoGrid({ photos, onPhotoClick }: PhotoGridProps) {
 
   useEffect(() => {
     const updateColumns = () => {
+      if (typeof window === 'undefined') return
+      
       const width = window.innerWidth
       const userColumns = Number(settings.columns) || 4
       let responsiveColumns = Math.max(1, Math.min(userColumns, 10)) // Clamp between 1 and 10

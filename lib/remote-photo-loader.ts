@@ -1,6 +1,6 @@
 import type { Photo } from "./photo-data"
 
-const REMOTE_CONFIG_URL = "https://www.cxin.net/cdn/photos.js"
+const REMOTE_CONFIG_URL = "/photos.js"
 
 /**
  * Extract DateTimeOriginal from image EXIF data

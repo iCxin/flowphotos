@@ -1,3 +1,4 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
@@ -7,7 +8,12 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    domains: ['p.cxin.net'],
   },
+  experimental: {
+    esmExternals: 'loose',
+  },
+  output: 'standalone',
 }
 
 export default nextConfig

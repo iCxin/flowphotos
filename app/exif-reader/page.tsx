@@ -45,23 +45,64 @@ export default function ExifReaderPage() {
     async (url: string) => {
       if (!url.trim()) return
 
+      // 验证 URL 格式
+      let validatedUrl = url.trim()
+      if (!validatedUrl.startsWith("http://") && !validatedUrl.startsWith("https://")) {
+        validatedUrl = "https://" + validatedUrl
+      }
+
       setIsLoadingUrl(true)
       setIsProcessing(true)
       try {
-        const response = await fetch(url)
+        // 添加超时控制和更好的错误处理
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 10000) // 10秒超时
+
+        const response = await fetch(validatedUrl, {
+          signal: controller.signal,
+          mode: "cors",
+          credentials: "omit",
+        })
+        
+        clearTimeout(timeoutId)
+        
         if (!response.ok) {
-          throw new Error("无法加载图片")
+          throw new Error(`网络错误: ${response.status} ${response.statusText}`)
+        }
+
+        const contentType = response.headers.get("content-type")
+        if (!contentType || !contentType.startsWith("image/")) {
+          throw new Error("链接指向的不是图片文件")
         }
 
         const blob = await response.blob()
-        const fileName = url.split("/").pop() || "image"
-        const file = new File([blob], fileName, { type: blob.type })
+        if (blob.size === 0) {
+          throw new Error("图片文件为空")
+        }
+
+        const fileName = validatedUrl.split("/").pop() || "image"
+        const fileExtension = blob.type.split("/")[1] || "jpg"
+        const finalFileName = fileName.includes(".") ? fileName : `${fileName}.${fileExtension}`
+        
+        const file = new File([blob], finalFileName, { type: blob.type })
 
         await processImage(file)
         setImageUrl("")
       } catch (error) {
         console.error("[v0] Error loading image from URL:", error)
-        alert("无法从链接加载图片，请检查链接是否有效")
+        
+        let errorMessage = "无法从链接加载图片"
+        if (error.name === "AbortError") {
+          errorMessage = "请求超时，请检查网络连接或图片链接"
+        } else if (error.message.includes("CORS")) {
+          errorMessage = "跨域访问被拒绝，请使用支持 CORS 的图片链接"
+        } else if (error.message.includes("network")) {
+          errorMessage = "网络连接失败，请检查网络设置"
+        } else if (error.message.includes("SSL")) {
+          errorMessage = "SSL 证书错误，请尝试使用 http:// 链接"
+        }
+        
+        alert(`${errorMessage}\n\n错误详情: ${error.message}`)
       } finally {
         setIsLoadingUrl(false)
         setIsProcessing(false)
@@ -162,7 +203,7 @@ export default function ExifReaderPage() {
               type="url"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="输入图片链接（支持 https:// 或 http://）"
+              placeholder="输入图片链接（如：https://example.com/image.jpg）"
               className="flex-1 px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm sm:text-base"
               disabled={isLoadingUrl}
               onKeyDown={(e) => {
@@ -170,15 +211,27 @@ export default function ExifReaderPage() {
                   processImageUrl(imageUrl)
                 }
               }}
+              title="支持常见图片格式：JPG, PNG, GIF, WebP 等"
             />
             <button
               onClick={() => processImageUrl(imageUrl)}
               disabled={!imageUrl.trim() || isLoadingUrl}
-              className="px-4 py-2 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl bg-primary text-primary-foreground font-medium text-sm sm:text-base hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="px-4 py-2 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl bg-primary text-primary-foreground font-medium text-sm sm:text-base hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+              title={!imageUrl.trim() ? "请输入图片链接" : "从链接读取图片信息"}
             >
-              {isLoadingUrl ? "加载中..." : "读取"}
+              {isLoadingUrl ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  加载中...
+                </>
+              ) : (
+                "读取"
+              )}
             </button>
           </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            提示：如果遇到跨域问题，请使用支持 CORS 的图片链接或服务器已配置 CORS 头
+          </p>
         </div>
 
         {/* Upload Area */}

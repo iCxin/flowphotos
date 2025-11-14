@@ -7,13 +7,11 @@ import { Lightbox } from "@/components/lightbox"
 import { SkeletonGrid } from "@/components/skeleton-grid"
 import { FilterPanel } from "@/components/filter-panel"
 import { TimelineView } from "@/components/timeline-view"
-import { AlbumView } from "@/components/album-view"
-import { albums } from "@/lib/photo-data"
 import { fetchRemotePhotos } from "@/lib/remote-photo-loader"
 import { ArrowUp } from "lucide-react"
 import type { Photo } from "@/lib/photo-data"
 
-type ViewMode = "grid" | "timeline" | "albums"
+type ViewMode = "grid" | "timeline"
 type SortMode = "date-desc" | "date-asc"
 
 export default function Home() {
@@ -27,7 +25,6 @@ export default function Home() {
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [viewMode, setViewMode] = useState<ViewMode>("grid")
   const [showFilters, setShowFilters] = useState(false)
-  const [selectedAlbumId, setSelectedAlbumId] = useState<number | null>(null)
   const [sortMode, setSortMode] = useState<SortMode>("date-desc")
   const loaderRef = useRef<HTMLDivElement>(null)
 
@@ -76,11 +73,6 @@ export default function Home() {
       })
     }
 
-    // Filter by album
-    if (selectedAlbumId !== null) {
-      result = result.filter((photo) => photo.albumId === selectedAlbumId)
-    }
-
     // Sort
     switch (sortMode) {
       case "date-desc":
@@ -100,7 +92,7 @@ export default function Home() {
     }
 
     setFilteredPhotos(result)
-  }, [photos, viewMode, selectedAlbumId, sortMode, searchTitle, selectedCamera, selectedDateRange])
+  }, [photos, viewMode, sortMode, searchTitle, selectedCamera, selectedDateRange])
 
   const loadMorePhotos = useCallback(() => {
     if (isLoading || !hasMore) return
@@ -164,7 +156,7 @@ export default function Home() {
     }>,
   ) => {
     const newPhotos: Photo[] = uploadedPhotos.map((photo, index) => ({
-      id: Date.now() + index,
+      id: uploadedPhotos.length + photos.length + index,
       ...photo,
       category: "上传照片",
     }))
@@ -184,11 +176,8 @@ export default function Home() {
       <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-6 md:py-8">
         {showFilters && (
           <FilterPanel
-            selectedAlbumId={selectedAlbumId}
-            onAlbumChange={setSelectedAlbumId}
             sortMode={sortMode}
             onSortChange={setSortMode}
-            albums={albums}
             allPhotos={photos}
             searchTitle={searchTitle}
             onSearchTitleChange={setSearchTitle}
@@ -203,8 +192,6 @@ export default function Home() {
           <SkeletonGrid />
         ) : viewMode === "timeline" ? (
           <TimelineView photos={filteredPhotos} onPhotoClick={openLightbox} />
-        ) : viewMode === "albums" ? (
-          <AlbumView albums={albums} photos={filteredPhotos} onPhotoClick={openLightbox} />
         ) : (
           <PhotoGrid photos={filteredPhotos} onPhotoClick={openLightbox} />
         )}

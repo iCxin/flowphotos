@@ -1,14 +1,10 @@
 "use client"
 
 import { X } from "lucide-react"
-import type { Album } from "@/lib/photo-data"
 
 interface FilterPanelProps {
-  selectedAlbumId: number | null
-  onAlbumChange: (id: number | null) => void
   sortMode: string
   onSortChange: (mode: any) => void
-  albums: Album[]
   allPhotos: any[]
   searchTitle: string
   onSearchTitleChange: (value: string) => void
@@ -19,11 +15,8 @@ interface FilterPanelProps {
 }
 
 export function FilterPanel({
-  selectedAlbumId,
-  onAlbumChange,
   sortMode,
   onSortChange,
-  albums,
   allPhotos,
   searchTitle,
   onSearchTitleChange,
@@ -37,14 +30,13 @@ export function FilterPanel({
   )
 
   const clearFilters = () => {
-    onAlbumChange(null)
     onSearchTitleChange("")
     onCameraChange(null)
     onDateRangeChange(null)
   }
 
   const hasActiveFilters =
-    selectedAlbumId !== null || searchTitle !== "" || selectedCamera !== null || selectedDateRange !== null
+    searchTitle !== "" || selectedCamera !== null || selectedDateRange !== null
 
   return (
     <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-muted/50 rounded-xl border border-border/50 animate-in slide-in-from-top duration-300">
@@ -168,35 +160,6 @@ export function FilterPanel({
             >
               最早优先
             </button>
-          </div>
-        </div>
-
-        <div>
-          <label className="text-xs sm:text-sm font-medium text-foreground mb-1.5 sm:mb-2 block">按相册筛选</label>
-          <div className="flex flex-wrap gap-1.5 sm:gap-2">
-            <button
-              onClick={() => onAlbumChange(null)}
-              className={`px-2 sm:px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-lg transition-all ${
-                selectedAlbumId === null
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-background text-muted-foreground hover:text-foreground hover:bg-accent"
-              }`}
-            >
-              全部相册
-            </button>
-            {albums.map((album) => (
-              <button
-                key={album.id}
-                onClick={() => onAlbumChange(album.id)}
-                className={`px-2 sm:px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-lg transition-all ${
-                  selectedAlbumId === album.id
-                    ? "bg-primary text-primary-foreground shadow-sm"
-                    : "bg-background text-muted-foreground hover:text-foreground hover:bg-accent"
-                }`}
-              >
-                {album.name}
-              </button>
-            ))}
           </div>
         </div>
       </div>
