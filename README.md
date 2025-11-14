@@ -65,7 +65,7 @@
 
 ### 自动尺寸检测
 
-\`\`\`typescript
+```typescript
 // lib/image-utils.ts
 export async function detectImageDimensions(url: string): Promise<ImageDimensions> {
   return new Promise((resolve, reject) => {
@@ -79,11 +79,11 @@ export async function detectImageDimensions(url: string): Promise<ImageDimension
     img.src = url
   })
 }
-\`\`\`
+```
 
 ### EXIF提取（使用exifr库）
 
-\`\`\`typescript
+```typescript
 // lib/exif-extractor.ts
 export async function extractExifData(file: File): Promise<Partial<ExifData>> {
   // 使用exifr库动态提取：
@@ -93,6 +93,7 @@ export async function extractExifData(file: File): Promise<Partial<ExifData>> {
   // - 拍摄时间
   // - 闪光灯、曝光模式、白平衡等
 }
+<<<<<<< HEAD
 \`\`\`
 
 ## 项目结构
@@ -102,6 +103,17 @@ export async function extractExifData(file: File): Promise<Partial<ExifData>> {
 │   ├── page.tsx              # 主页面
 │   └── exif-reader/
 │       └── page.tsx          # EXIF读取器页面 ⭐
+=======
+```
+
+## 项目结构
+
+```
+├── app/
+│   ├── page.tsx              # 主页面
+│   └── exif-reader/
+│       └── page.tsx          # EXIF读取器页面
+>>>>>>> c02522846732c0bccf2d207d75467976918a1f4d
 ├── components/
 │   ├── photo-grid.tsx        # 自适应瀑布流网格
 │   ├── photo-card.tsx        # 照片卡片（点击打开灯箱）
@@ -112,7 +124,7 @@ export async function extractExifData(file: File): Promise<Partial<ExifData>> {
 │   └── exif-extractor.ts     # EXIF提取工具（exifr集成）
 └── hooks/
     └── use-image-upload.ts   # 图片上传Hook
-\`\`\`
+```
 
 ## 开发指南
 
@@ -120,7 +132,7 @@ export async function extractExifData(file: File): Promise<Partial<ExifData>> {
 
 照片的 `width`、`height` 和 `exif` 现在都是**可选的**，系统会自动检测和提取：
 
-\`\`\`typescript
+```typescript
 const newPhoto: Photo = {
   id: 1,
   url: "/my-photo.jpg",
@@ -128,7 +140,7 @@ const newPhoto: Photo = {
   // width 和 height 可省略，将自动检测
   // exif 数据会在查看时从图片文件自动提取
 }
-\`\`\`
+```
 
 ### EXIF面板交互
 
